@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hanoi Marathon System</title>
+    <style>
+        /* General Styles (As before) */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #f50c0c;
+            line-height: 1.6;
+            position: relative;
+            /* Required for absolute positioning of backgrounds */
+        }
+
+        body::before,
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            width: 20%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: -1;
+            opacity: 0.3;
+            /* Adjust the opacity */
+        }
+
+        body::before {
+            left: 0;
+            background-image: url('https://img.pikbest.com/png-images/20240515/marathon-runner-art-pic-or-running-man-_10564352.png!sw800');
+        }
+
+        body::after {
+            right: 0;
+            background-image: url('https://img.lovepik.com/png/20231025/Olympic-Geometric-Sports-Project-Marathon-olympics-cartoon-abstract-style_353473_wh860.png');
+        }
+
+        header {
+            background-color: #df1f1f;
+            color: #fff;
+            padding: 1rem 0;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        nav ul li {
+            margin: 0 1rem;
+        }
+
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        nav ul li a:hover {
+            text-decoration: underline;
+        }
+
+        section {
+            padding: 2rem;
+            margin: 1rem auto;
+            max-width: 900px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #da2828;
+        }
+
+        form label {
+            display: block;
+            margin: 0.5rem 0 0.2rem;
+        }
+
+        form input,
+        form select,
+        form button {
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        form input:invalid {
+            border-color: red;
+        }
+
+        form input:valid {
+            border-color: green;
+        }
+
+        form button {
+            background-color: #d7222b;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        form button:hover {
+            background-color: #de2225;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #ddd;
+            padding: 0.5rem;
+            text-align: center;
+        }
+
+        table th {
+            background-color: #d0213c;
+            color: #e42222;
+        }
+
+        .gallery {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .gallery img {
+            margin: 0.5rem;
+            width: 300px;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+        }
+
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 1rem 0;
+            margin-top: 2rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+
+            nav ul {
+                flex-direction: column;
+            }
+
+            section {
+                padding: 1rem;
+            }
+        }
+
+        .accept-button {
+            background-color: green;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 5px;
+
+        }
+
+        .accept-button:hover {
+            background-color: darkgreen;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 0.9em;
+            margin-top: -0.7rem;
+            margin-bottom: 0.5rem;
+            display: block;
+            text-align: center;
+        }
+
+        .delete-button {
+            background-color: #dc3545;
+            /* Red color */
+            color: white;
+            border: none;
+            padding: 5px 10px;
+
+            cursor: pointer;
+
+        }
+
+        .delete-button:hover {
+            background-color: #c82333;
+        }
+
+        .success-message {
+            color: green;
+            font-size: 0.9em;
+            margin-top: -0.7rem;
+            margin-bottom: 0.5rem;
+            display: block;
+            text-align: center;
+        }
+
+        .data-item {
+            padding: 0.5rem;
+            margin: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 1rem;
+            font-style: italic;
+            color: #777;
+        }
+
+        .data-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .data-list-item {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .data-list-item h4 {
+            font-weight: bold;
+            color: #d91e28;
+            text-align: center;
+        }
+
+        .data-item-value {
+            margin: 5px 0;
+            font-size: 0.9em;
+
+        }
+
+        .download-button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            display: block;
+            margin-left: auto;
+        }
+
+        .download-button:hover {
+            background-color: #218838;
+        }
+
+        .data-table-container {
+            overflow-x: auto;
+        }
+
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 600px;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+
+        .modal-text {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header Section -->
+    <header>
+        <h1>Hanoi Marathon System</h1>
+        <nav>
+            <ul>
+                <li><a href="#register">User Registration</a></li>
+                <li><a href="#application">Participation Application</a></li>
+                <li><a href="#acceptance">Accept Applications</a></li>
+                <li><a href="#results">Record Results</a></li>
+                <li><a href="#output">All Data</a></li>
+                <li><a href="#gallery">Course Gallery</a></li>
+            </ul>
+        </nav>
+    </header>
+    <!-- User Registration Section -->
+    <section id="register">
+        <h2>User Registration</h2>
+        <form id="registrationForm">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" pattern="^[a-zA-Z0-9]{3,15}$"
+                title="3-15 alphanumeric characters" required>
+            <span id="usernameError" class="error-message"></span>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+            <span id="emailError" class="error-message"></span>
+
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password"
+                pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}"
+                title="Must contain at least one number, one uppercase letter, one lowercase letter, and at least 6 characters"
+                required>
+            <span id="passwordError" class="error-message"></span>
+            <span id="registerSuccess" class="success-message"></span>
+            <div class="loading" id="registrationLoading" style="display:none;">Processing...</div>
+
+            <button type="submit">Register</button>
+        </form>
+    </section>
+    <!-- Participation Application Section -->
+    <section id="application">
+        <h2>Participation Application</h2>
+        <form id="participationForm">
+            <label for="participantName">Name:</label>
+            <input type="text" id="participantName" name="participantName" required>
+            <label for="participantAge">Age:</label>
+            <input type="number" id="participantAge" name="participantAge" min="10" max="100" required>
+
+            <label for="participantHometown">Hometown:</label>
+            <input type="text" id="participantHometown" name="participantHometown" required>
+
+            <label for="participantGender">Gender:</label>
+            <select id="participantGender" name="participantGender" required>
+                <option value="">Select Gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+            </select>
+
+
+            <label for="event">Event:</label>
+            <select id="event" name="event" required>
+                <option value="">Select Event</option>
+                <option value="50km">50 km</option>
+                <option value="70km">70 km</option>
+                <option value="100km">100 km</option>
+                <option value="160km">160 km</option>
+            </select>
+            <span id="applicationSuccess" class="success-message"></span>
+            <div class="loading" id="applicationLoading" style="display:none;">Processing...</div>
+
+            <button type="submit">Apply</button>
+        </form>
+    </section>
+    <!-- Record Results Section -->
+    <section id="results">
+        <h2>Record Results</h2>
+        <form id="recordResultsForm">
+            <label for="resultParticipant">Participant Name:</label>
+            <input type="text" id="resultParticipant" name="resultParticipant" required>
+            <label for="event">Event:</label>
+            <select id="resultEvent" name="resultEvent" required>
+                <option value="">Select Event</option>
+                <option value="50km">50 km</option>
+                <option value="70km">70 km</option>
+                <option value="100km">100 km</option>
+                <option value="160km">160 km</option>
+            </select>
+            <label for="finishingTime">Finishing Time (in minutes):</label>
+            <input type="number" id="finishingTime" name="finishingTime" required>
+            <span id="finishingTimeError" class="error-message"></span>
+            <span id="resultSuccess" class="success-message"></span>
+            <div class="loading" id="resultLoading" style="display:none;">Processing...</div>
+            <button type="submit">Record Result</button>
+        </form>
+    </section>
+    <!-- Accept Applications Section -->
+    <section id="acceptance">
+        <h2>Accept Participation Applications</h2>
+        <table id="applicationsTable">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Event</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Dynamic content will be added here -->
+            </tbody>
+        </table>
+        <p id="noApplicationsMessage" style="display: none; text-align:center;">No applications to display.</p>
+    </section>
+    <!--All Data Output Section-->
+    <section id="output">
+        <h2>All Data</h2>
+        <div class="data-table-container" id="allDataOutput">
+        </div>
+        <button id="downloadData" class="download-button">Download Data</button>
+        <p id="noDataMessage" style="display: none; text-align:center;">No data to display.</p>
+    </section>
+    <!-- Gallery Section -->
+    <section id="gallery">
+        <h2>Course Gallery</h2>
+        <div class="gallery" id="courseGallery">
+            <img src="https://image.anninhthudo.vn/h600/Uploaded/2024/wopkplw/2024_10_13/vpbank-marathon-2024-10-7461.jpg"
+                alt="Start Line"
+                data-location="This is the official annual international sporting event of Hanoi city, and is also a key, traditional sporting activity to practically celebrate the Capital Liberation Day on October 10.">
+            <img src="https://image.anninhthudo.vn/h600/Uploaded/2024/wopkplw/2024_10_13/vpbank-marathon-2024-18-654.jpg"
+                alt="Relay station"
+                data-location="Throughout the running route, there are physical and medical rest stops interspersed with mental rest stops.">
+            <img src="https://image.anninhthudo.vn/h600/Uploaded/2024/wopkplw/2024_10_13/vpbank-marathon-2024-14-1527.jpg"
+                alt="Street scene"
+                data-location="Runners run through the ancient corners of 36 streets, experiencing the Creative Crossroads with typical historical heritage works of Hanoi.">
+            <img src="https://image.anninhthudo.vn/h600/Uploaded/2024/wopkplw/2024_10_13/vpbank-marathon-2024-98-5054.jpg"
+                alt="Hanoi city"
+                data-location="This event also aims to promote tourism, build and promote the image of beautiful, friendly and attractive Hanoi to domestic and foreign tourists.">
+            <img src="https://image.anninhthudo.vn/h600/Uploaded/2024/wopkplw/2024_10_13/vpbank-marathon-2024-68-9704.jpg"
+                alt="World class playground"
+                data-location="The race also focuses all resources to bring Hanoi in particular and the running community in general a prestigious race, a classy playground.">
+            <img src="https://image.anninhthudo.vn/h600/Uploaded/2024/wopkplw/2024_10_13/vpbank-marathon-2024-113-2766.jpg"
+                alt="Volunteerism"
+                data-location="All revenue from the race will be invested in the quality of the tournament, bringing the best experience to runners and contributing to social charity activities, fulfilling responsibility to the community.">
+        </div>
+        <div class="modal-backdrop" id="courseModal">
+            <div class="modal-content">
+                <button class="modal-close" id="closeModal">×</button>
+                <div class="modal-text">
+                    <h2 id="modalTitle"></h2>
+                    <div id="modalMessage"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Footer Section -->
+    <footer>
+        <p>© 2024 Hanoi Marathon System</p>
+    </footer>
+    <script>
+        //Get initial data from local storage or initialize empty arrays
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+        const applications = JSON.parse(localStorage.getItem('applications')) || [];
+        const results = JSON.parse(localStorage.getItem('results')) || [];
+        // Function to show loading animation
+        function showLoading(elementId) {
+            document.getElementById(elementId).style.display = "flex";
+        }
+        // Function to hide loading animation
+        function hideLoading(elementId) {
+            document.getElementById(elementId).style.display = "none";
+        }
+
+        // Function to save data to localStorage
+        function saveDataToLocalStorage() {
+            localStorage.setItem('users', JSON.stringify(users));
+            localStorage.setItem('applications', JSON.stringify(applications));
+            localStorage.setItem('results', JSON.stringify(results));
+        }
+
+        // Function to clear all the error messages on the form
+        function clearErrorMessages(formElement) {
+            const errorMessages = formElement.querySelectorAll(".error-message");
+            errorMessages.forEach(message => message.textContent = "");
+        }
+
+        // Function to sanitize input values
+        function sanitizeInput(input) {
+            const tempElement = document.createElement('div');
+            tempElement.textContent = input;
+            return tempElement.innerHTML;
+
+        }
+        // Function to generate a simulated hash
+        async function generateHash(password) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(password);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            return hashHex;
+        }
+
+        // Function to convert minutes to HH:MM:SS format
+        function formatTime(minutes) {
+            if (isNaN(minutes) || minutes < 0) {
+                return "Invalid Time";
+            }
+            const totalSeconds = Math.round(minutes * 60);
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutesPart = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+
+            return String(hours).padStart(2, '0') + ':' + String(minutesPart).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+        }
+        function validateEmail(email) {
+            const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            return re.test(email);
+        }
+        // Function to handle user registration form submission
+        async function handleRegistration(e) {
+            e.preventDefault();
+            const form = document.getElementById("registrationForm");
+            let username = document.getElementById("username").value;
+            let email = document.getElementById("email").value;
+            let password = document.getElementById("password").value;
+            const registerSuccess = document.getElementById("registerSuccess");
+            const usernameError = document.getElementById("usernameError");
+            const emailError = document.getElementById("emailError");
+            const passwordError = document.getElementById("passwordError");
+            showLoading('registrationLoading');
+            clearErrorMessages(form);
+
+            if (!username || !email || !password) {
+                usernameError.textContent = "Please fill out all fields";
+                emailError.textContent = "Please fill out all fields";
+                passwordError.textContent = "Please fill out all fields";
+                hideLoading("registrationLoading");
+                return;
+            }
+            username = sanitizeInput(username);
+            email = sanitizeInput(email);
+            password = await generateHash(sanitizeInput(password));
+
+            if (users.some(user => user.username === username)) {
+                usernameError.textContent = "Username already taken."
+                hideLoading("registrationLoading");
+                return;
+
+            }
+            if (users.some(user => user.email === email)) {
+                emailError.textContent = "Email already registered.";
+                hideLoading("registrationLoading");
+                return;
+
+            }
+           if(!validateEmail(email)) {
+            emailError.textContent = "Please provide a valid email"
+           hideLoading("registrationLoading");
+           return;
+       }
+            const newUser = {
+                username,
+                email,
+                password
+            };
+            users.push(newUser);
+            saveDataToLocalStorage();
+            registerSuccess.textContent = "User successfully registered!";
+            hideLoading("registrationLoading");
+            form.reset();
+             updateAllDataOutput();
+            setTimeout(() => {
+                registerSuccess.textContent = "";
+            }, 3000);
+        }
+        // Function to handle application form submission
+        function handleApplication(e) {
+            e.preventDefault();
+            const form = document.getElementById("participationForm");
+            let participantName =
+            document.getElementById("participantName").value;
+            let event = document.getElementById("event").value;
+            const applicationSuccess = document.getElementById("applicationSuccess");
+            clearErrorMessages(form);
+            showLoading("applicationLoading");
+
+            participantName = sanitizeInput(participantName);
+            event = sanitizeInput(event);
+            const newApplication = {
+                name: participantName,
+                event: event,
+                status: "pending"
+            };
+
+            applications.push(newApplication);
+            saveDataToLocalStorage();
+            applicationSuccess.textContent = "Application submitted successfully!";
+            hideLoading("applicationLoading");
+            form.reset();
+            updateApplicationsTable();
+            updateAllDataOutput();
+
+            setTimeout(() => {
+                applicationSuccess.textContent = "";
+            }, 3000);
+
+        }
+        // Function to handle result recording form submission
+        function handleResultRecording(e) {
+            e.preventDefault();
+            const form = document.getElementById("recordResultsForm");
+            let participant = document.getElementById("resultParticipant").value;
+            let event = document.getElementById("resultEvent").value;
+            let finishingTime = document.getElementById("finishingTime").value;
+            const finishingTimeError = document.getElementById("finishingTimeError");
+            const resultSuccess = document.getElementById("resultSuccess");
+            showLoading("resultLoading");
+            clearErrorMessages(form)
+
+            if (!finishingTime || isNaN(finishingTime) || finishingTime < 0) {
+                finishingTimeError.textContent = "Please enter a valid positive number!";
+                hideLoading("resultLoading");
+                return;
+            }
+
+            participant = sanitizeInput(participant);
+            event = sanitizeInput(event);
+            finishingTime = sanitizeInput(finishingTime);
+            const newResult = {
+                participant,
+                event,
+                finishingTime
+            }
+            results.push(newResult);
+            saveDataToLocalStorage();
+            resultSuccess.textContent = "Results Recorded";
+            hideLoading("resultLoading");
+            form.reset();
+            updateAllDataOutput();
+            setTimeout(() => {
+                resultSuccess.textContent = "";
+            }, 3000);
+
+        }
+        // Function to create table row
+        function createTableRow(data) {
+            const row = document.createElement("tr");
+            for (const key in data) {
+                const cell = document.createElement("td");
+                cell.textContent = data[key];
+                row.appendChild(cell);
+            }
+            return row;
+        }
+
+        // Function to update application table
+        function updateApplicationsTable() {
+            const tableBody = document.querySelector("#applicationsTable tbody");
+            tableBody.innerHTML = ''; // Clear existing content
+            const noApplicationsMessage = document.getElementById("noApplicationsMessage");
+
+            if (applications.length === 0) {
+                noApplicationsMessage.style.display = "block";
+            } else {
+                noApplicationsMessage.style.display = "none";
+
+            }
+            applications.forEach((application, index) => {
+
+                const row = createTableRow({
+                    name: application.name,
+                    event: application.event,
+                    status: application.status
+                });
+                const actionCell = document.createElement("td");
+                const acceptButton = document.createElement("button");
+                acceptButton.classList.add("accept-button");
+                acceptButton.textContent = "Accept";
+                acceptButton.dataset.index = index
+                acceptButton.addEventListener("click", function (event) {
+                    const index = event.target.dataset.index;
+                    acceptApplication(index);
+                });
+                const actionButtons = document.createElement("div");
+                actionButtons.classList.add("action-buttons");
+                actionButtons.appendChild(acceptButton)
+                actionCell.appendChild(actionButtons)
+                row.appendChild(actionCell);
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Function to accept an application
+        function acceptApplication(index) {
+            if (applications[index]) {
+                applications[index].status = "accepted";
+                saveDataToLocalStorage();
+                updateApplicationsTable();
+                updateAllDataOutput();
+            } else {
+                alert("Can not accept this application");
+            }
+
+        }
+
+        // Function to hide sensitive data
+        function hideSensitiveData(data) {
+            if (typeof data === 'string') {
+                return '*'.repeat(data.length);
+            }
+
+            if (typeof data === 'object') {
+                const hiddenData = {};
+                for (const key in data) {
+                    hiddenData[key] = hideSensitiveData(data[key]);
+                }
+                return hiddenData;
+            }
+            return data;
+        }
+
+        // Function to update All data section
+        function updateAllDataOutput() {
+            const outputDiv = document.getElementById("allDataOutput");
+            outputDiv.innerHTML = '';
+            const noDataMessage = document.getElementById("noDataMessage");
+            // Check if there is no data to display
+            if (users.length === 0 && applications.length === 0 && results.length === 0) {
+                noDataMessage.style.display = "block";
+            } else {
+                noDataMessage.style.display = "none";
+            }
+            // Create list for each data type (users, applications, results)
+            if (users.length > 0) {
+                 const usersList = document.createElement("div");
+                usersList.classList.add("data-list");
+               outputDiv.appendChild(document.createElement("h3")).textContent = "Users";
+                users.forEach((user,index) => {
+                    const listItem = document.createElement("div");
+                    listItem.classList.add("data-list-item");
+                   listItem.innerHTML = `
+                       <h4>User Data</h4>
+                       <div class="data-item"> <strong>Username:</strong> <span class="data-item-value">${user.username}</span></div>
+                       <div class="data-item"><strong>Email:</strong> <span class="data-item-value">${hideSensitiveData(user.email)}</span></div>
+                      <div class="data-item"><strong>Password:</strong> <span class="data-item-value">${hideSensitiveData(user.password)}</span></div>
+                      <div class="action-buttons">
+                      <button class="delete-button" data-type="user" data-index="${index}">Delete</button>
+                     </div>
+                       `;
+                  usersList.appendChild(listItem);
+               });
+               outputDiv.appendChild(usersList);
+          }
+                if (applications.length > 0) {
+                    const applicationsList = document.createElement("div");
+                    applicationsList.classList.add("data-list");
+                   outputDiv.appendChild(document.createElement("h3")).textContent = "Applications";
+                     applications.forEach((application,index) => {
+                           const listItem = document.createElement("div");
+                           listItem.classList.add("data-list-item");
+                        listItem.innerHTML = `
+                           <h4>Application Data</h4>
+                          <div class="data-item"><strong>Name:</strong> <span class="data-item-value">${application.name}</span></div>
+                           <div class="data-item"><strong>Event:</strong><span class="data-item-value"> ${application.event}</span></div>
+                           <div class="data-item"><strong>Status:</strong> <span class="data-item-value">${application.status}</span></div>
+                           <div class="action-buttons">
+                               <button class="delete-button" data-type="application" data-index="${index}">Delete</button>
+                            </div>
+                           `;
+                           applicationsList.appendChild(listItem);
+                      });
+                       outputDiv.appendChild(applicationsList);
+                }
+                if (results.length > 0) {
+                    const resultsList = document.createElement("div");
+                    resultsList.classList.add("data-list");
+                  outputDiv.appendChild(document.createElement("h3")).textContent = "Results";
+                    results.forEach((result,index) => {
+                        const listItem = document.createElement("div");
+                         listItem.classList.add("data-list-item");
+                        listItem.innerHTML = `
+                         <h4>Result Data</h4>
+                           <div class="data-item"><strong>Participant:</strong><span class="data-item-value"> ${result.participant}</span></div>
+                          <div class="data-item"><strong>Event:</strong><span class="data-item-value"> ${result.event}</span></div>
+                          <div class="data-item"><strong>Time:</strong> <span class="data-item-value">${formatTime(result.finishingTime)}</span></div>
+                            <div class="action-buttons">
+                            <button class="delete-button" data-type="result" data-index="${index}">Delete</button>
+                         </div>
+                        `;
+                        resultsList.appendChild(listItem)
+                     });
+                       outputDiv.appendChild(resultsList);
+                }
+
+        }
+
+        // Function for generating a CSV from a table
+        function generateCSV(table) {
+            const rows = table.querySelectorAll("tr");
+            const csv = [];
+
+            for (const row of rows) {
+                const cells = row.querySelectorAll("th, td");
+                const rowData = Array.from(cells).map(cell => cell.textContent.trim());
+                csv.push(rowData.join(","));
+            }
+            return csv.join("\n");
+        }
+        // Function to handle the download of data
+        function downloadCSV() {
+            const outputDiv = document.getElementById("allDataOutput");
+            const allTables = outputDiv.querySelectorAll('table');
+            let csvContent = "";
+            allTables.forEach(table => {
+                csvContent += generateCSV(table) + "\n"
+            });
+            const blob = new Blob([csvContent], {
+                type: "text/csv;charset=utf-8;"
+            });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", "marathon_data.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        // Function for handling deletions
+        function handleDeleteAction(event) {
+            if (event.target.classList.contains("delete-button")) {
+                const type = event.target.dataset.type;
+                const index = event.target.dataset.index;
+                if (confirm(`Are you sure you want to delete this ${type}?`)) {
+                    switch (type) {
+                        case "user":
+                            deleteUser(index);
+                            break;
+                        case "application":
+                            deleteApplication(index);
+                            break;
+                        case "result":
+                            deleteResult(index);
+                            break;
+                        default:
+                            console.error("Invalid delete operation")
+                    }
+
+                }
+            }
+        }
+
+        // Function for deleting users
+        function deleteUser(index) {
+            if (users[index]) {
+                users.splice(index, 1);
+                saveDataToLocalStorage();
+                updateAllDataOutput();
+            } else {
+                alert("Can not delete)
+                this user");
+            }
+
+        }
+        // Function for deleting applications
+        function deleteApplication(index) {
+            if (applications[index]) {
+                applications.splice(index, 1);
+                saveDataToLocalStorage();
+                updateApplicationsTable();
+                updateAllDataOutput();
+            } else {
+                alert("Can not delete this application");
+            }
+
+        }
+        // Function for deleting results
+        function deleteResult(index) {
+            if (results[index]) {
+                results.splice(index, 1);
+                saveDataToLocalStorage();
+                updateAllDataOutput();
+            } else {
+                alert("Can not delete this result");
+            }
+
+        }
+
+        //Modal functionality
+        const modal = document.getElementById("courseModal");
+        const closeModal = document.getElementById("closeModal");
+        const modalTitle = document.getElementById("modalTitle");
+        const modalMessage = document.getElementById("modalMessage");
+        const galleryImages = document.querySelectorAll("#courseGallery img");
+
+
+        galleryImages.forEach(img => {
+            img.addEventListener('click', function () {
+                modal.style.display = "flex";
+                modalTitle.textContent = this.alt;
+                modalMessage.textContent = this.dataset.location;
+            });
+        });
+
+        closeModal.addEventListener('click', function () {
+            modal.style.display = 'none';
+        });
+
+        window.addEventListener('click', function (event) {
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        })
+    document.getElementById("username").addEventListener("input", validateUsername);
+     document.getElementById("email").addEventListener("input", validateEmailInput);
+    document.getElementById("password").addEventListener("input", validatePasswordInput);
+
+
+ function validateUsername() {
+      const usernameInput = document.getElementById("username");
+      const usernameError = document.getElementById("usernameError");
+      const username = usernameInput.value;
+         if(!username){
+              usernameError.textContent = "This field is required"
+               return;
+             }
+          if (!/^[a-zA-Z0-9]{3,15}$/.test(username)) {
+              usernameError.textContent = "3-15 alphanumeric characters";
+         } else {
+           usernameError.textContent = "";
+          }
+    }
+   function validateEmailInput() {
+      const emailInput = document.getElementById("email");
+       const emailError = document.getElementById("emailError");
+       const email = emailInput.value;
+      if(!email) {
+           emailError.textContent = "This field is required";
+             return;
+         }
+     if (!validateEmail(email)) {
+          emailError.textContent = "Please provide a valid email";
+        } else{
+          emailError.textContent = "";
+       }
+    }
+   function validatePasswordInput(){
+       const passwordInput = document.getElementById("password");
+       const passwordError = document.getElementById("passwordError");
+        const password = passwordInput.value
+       if(!password) {
+           passwordError.textContent = "This field is required";
+             return;
+          }
+      if (!/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}/.test(password)) {
+            passwordError.textContent ="Must contain at least one number, one uppercase letter, one lowercase letter, and at least 6 characters"
+        } else {
+            passwordError.textContent = "";
+        }
+   }
+
+        //Event Listeners
+        document.getElementById("registrationForm").addEventListener("submit", handleRegistration);
+        document.getElementById("participationForm").addEventListener("submit", handleApplication);
+        document.getElementById("recordResultsForm").addEventListener("submit", handleResultRecording);
+        document.getElementById("allDataOutput").addEventListener('click', handleDeleteAction)
+         document.getElementById("downloadData").addEventListener("click", downloadCSV)
+        //Initial setup
+        updateApplicationsTable();
+        updateAllDataOutput();
+        //Smooth scroll to section
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+
+</body>
+
+</html>
